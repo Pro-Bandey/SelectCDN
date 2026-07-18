@@ -1,0 +1,27 @@
+{
+  "$schema": "https://acode.app/schema/plugin/v0.1.0.json",
+  "id": "acode.plugin.selectcdn",
+  "name": "SelectCDN",
+  "version": "1.1.0",
+  "description": "A minimal, clean utility to manage and directly insert popular CDN dependencies into your project.",
+  "main": "main.js",
+  "icon": "icon.png",
+  "readme": "readme.md",
+  "files": [],
+  "minVersionCode": 290,
+  "price": 0,
+  "license": "Apache-2.0",
+  "repository": "https://github.com/Pro-Bandey/SelectCDN",
+  "keywords": [
+    "plugin",
+    "acode",
+    "editor",
+    "cdn",
+    "cdnjs"
+  ],
+  "author": {
+    "name": "Pro Bandey",
+    "github": "Pro-Bandey",
+    "url": "https://Pro-Bandey.github.io"
+  }
+}

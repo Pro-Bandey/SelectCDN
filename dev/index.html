@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="../icon.png" type="image/x-icon">
+    <title>Acode Plugin Development Preview</title>
+    <style>
+        :root {
+            --accent: #4f8cff;
+            --accent-hover: #6aa2ff;
+            --accent-soft: rgba(79, 140, 255, .12);
+            --bg: #101317;
+            --surface: #181c22;
+            --surface-2: #21262d;
+            --surface-3: #2b313b;
+            --text: #f4f7fb;
+            --text-secondary: #9ca9ba;
+            --border: #303744;
+            --success: #2ecc71;
+            --shadow: 0 12px 30px rgba(0, 0, 0, .35);
+            --radius: 14px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            background: var(--bg);
+            color: var(--text);
+            font: 14px/1.5 Inter, "Segoe UI", Roboto, sans-serif;
+        }
+
+        /*=========================LEFT WORKSPACE=========================*/
+        #workspace {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            padding: 28px;
+            background: radial-gradient(circle at top right, rgba(79, 140, 255, .08), transparent 35%), var(--bg);
+            border-right: 1px solid var(--border);
+        }
+
+        h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 6px;
+        }
+
+        h2::after {
+            content: "";
+            display: block;
+            width: 54px;
+            height: 4px;
+            margin-top: 8px;
+            border-radius: 100px;
+            background: var(--accent);
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            color: var(--text-secondary);
+            font-size: .82rem;
+            font-weight: 600;
+            letter-spacing: .3px;
+        }
+
+        select,
+        textarea {
+            width: 100%;
+            background: var(--surface);
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            outline: none;
+            transition: .2s;
+        }
+
+        select {
+            height: 48px;
+            padding: 0 14px;
+            cursor: pointer;
+        }
+
+        textarea {
+            flex: 1;
+            resize: none;
+            padding: 16px;
+            font: 13px Consolas, monospace;
+            line-height: 1.6;
+            min-height: 260px;
+        }
+
+        select:hover,
+        textarea:hover {
+            border-color: #4c5668;
+        }
+
+        select:focus,
+        textarea:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-soft);
+        }
+
+        /*=========================BUTTON=========================*/
+        .trigger-btn {
+            height: 50px;
+            width: 100%;
+            border: none;
+            border-radius: var(--radius);
+            background: linear-gradient(135deg, var(--accent), #3b82f6);
+            color: white;
+            font-size: .95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: .25s;
+            box-shadow: 0 6px 18px rgba(79, 140, 255, .25);
+        }
+
+        .trigger-btn:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(135deg, var(--accent-hover), #5f9dff);
+            box-shadow: 0 10px 26px rgba(79, 140, 255, .35);
+        }
+
+        .trigger-btn:active {
+            transform: scale(.98);
+        }
+
+        /*=========================PHONE PREVIEW=========================*/
+        #phone-preview {
+            width: 420px;
+            height: 100vh;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            background: #080a0c;
+            border-left: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        #phone-preview::before {
+            content: "Plugin Preview";
+            height: 58px;
+            display: flex;
+            align-items: center;
+            padding-left: 20px;
+            font-size: .95rem;
+            font-weight: 600;
+            color: white;
+            background: linear-gradient(180deg, #20242c, #171b21);
+            border-bottom: 1px solid var(--border);
+            box-shadow: var(--shadow);
+        }
+
+        #phone-preview::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 110px;
+            height: 5px;
+            transform: translateX(-50%);
+            border-radius: 0 0 10px 10px;
+            background: rgba(255, 255, 255, .12);
+        }
+
+        #plugin-page {
+            position: absolute;
+            top: 58px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg);
+            display: none;
+            overflow: auto;
+        }
+
+        #plugin-page.show {
+            display: block;
+        }
+
+        .fallback-screen {
+            margin: auto;
+            text-align: center;
+            padding: 30px;
+            max-width: 300px;
+        }
+
+        .fallback-screen p:first-child {
+            font-size: 1rem;
+            color: var(--text);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .fallback-screen p:last-child {
+            color: var(--text-secondary);
+            font-size: .82rem;
+            line-height: 1.6;
+        }
+
+        /*=========================TOAST=========================*/
+        #toast-container {
+            position: fixed;
+            left: 50%;
+            bottom: 26px;
+            transform: translateX(-50%);
+            padding: 12px 22px;
+            background: rgba(35, 40, 49, .95);
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            color: white;
+            font-size: .85rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: .25s;
+            backdrop-filter: blur(12px);
+            box-shadow: var(--shadow);
+            z-index: 9999;
+        }
+
+        #toast-container.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(-4px);
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 100px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-hover);
+        }
+
+        ::selection {
+            background: rgba(79, 140, 255, .35);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="workspace">
+        <h2>Acode Plugin Development Preview</h2>
+        <div class="control-group">
+            <label for="mock-filename">Simulated Open File Extension:</label>
+            <select id="mock-filename">
+                <option value="index.html">index.html (HTML/Script Tag Mode)</option>
+                <option value="app.js">app.js (ES Module Import Mode)</option>
+                <option value="style.css">style.css (CSS @import Mode)</option>
+            </select>
+        </div>
+        <label>Simulated Code Editor Workspace:</label>
+        <textarea id="editor-buffer" placeholder="Output injected by the plugin will appear here..."></textarea>
+        <div>
+            <button class="trigger-btn" id="open-plugin-btn">Open SelectCDN Plugin Window</button>
+        </div>
+    </div>
+
+    <div id="phone-preview">
+        <div id="plugin-page"></div>
+        <div class="fallback-screen">
+            <p>Plugin Interface is currently closed.</p>
+            <p style="font-size: 0.8rem;">Click "Open SelectCDN Plugin Window" to launch the plugin panel.</p>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <script>
+        const editorBuffer = document.getElementById('editor-buffer');
+        const mockFilename = document.getElementById('mock-filename');
+        const pluginPage = document.getElementById('plugin-page');
+        const toastContainer = document.getElementById('toast-container');
+
+        // Mock Window Toast notifications
+        window.toast = function (message) {
+            toastContainer.textContent = message;
+            toastContainer.classList.add('show');
+            setTimeout(() => toastContainer.classList.remove('show'), 2000);
+        };
+
+        // Mock Acode environment structure
+        window.editorManager = {
+            editor: {
+                commands: {
+                    commandsList: {},
+                    addCommand(cmd) {
+                        this.commandsList[cmd.name] = cmd;
+                        console.log(`Command registered: ${cmd.name}`);
+                    },
+                    removeCommand(name) {
+                        delete this.commandsList[name];
+                        console.log(`Command removed: ${name}`);
+                    }
+                },
+                insert(text) {
+                    const cursorPosition = editorBuffer.selectionStart;
+                    const currentText = editorBuffer.value;
+                    editorBuffer.value = currentText.substring(0, cursorPosition) + text + currentText.substring(cursorPosition);
+                    editorBuffer.focus();
+                }
+            },
+            get activeFile() {
+                return {
+                    filename: mockFilename.value
+                };
+            }
+        };
+
+        const pluginRegistration = [];
+        window.acode = {
+            alert(title, text) {
+                alert(`[Acode Alert - ${title}]\n${text}`);
+            },
+            setPluginInit(id, callback) {
+                pluginRegistration.push({ id, callback });
+            },
+            setPluginUnmount(id) {
+                console.log(`Plugin ${id} requested unmounting.`);
+            }
+        };
+
+        // Simulated Page Object
+        const pageMockInstance = {
+            get innerHTML() {
+                return pluginPage.innerHTML;
+            },
+            set innerHTML(content) {
+                pluginPage.innerHTML = content;
+            },
+            querySelector(selector) {
+                return pluginPage.querySelector(selector);
+            },
+            querySelectorAll(selector) {
+                return pluginPage.querySelectorAll(selector);
+            },
+            show() {
+                pluginPage.classList.add('show');
+            },
+            hide() {
+                pluginPage.classList.remove('show');
+            }
+        };
+
+        document.getElementById('open-plugin-btn').addEventListener('click', () => {
+            // Find and trigger registration commands added by plugin code (Command 'SCDN' or 'cdn-library')
+            const targetCommand = window.editorManager.editor.commands.commandsList['SCDN'] ||
+                window.editorManager.editor.commands.commandsList['cdn-library'];
+            if (targetCommand) {
+                targetCommand.exec();
+            } else {
+                alert("The plugin commands are not yet registered.");
+            }
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const pluginScript = document.createElement('script');
+            // Points upstream to the built files from the dev folder
+            pluginScript.src = '../dist/main.js';
+            pluginScript.onload = () => {
+                pluginRegistration.forEach(item => {
+                    // Pass the upstream root relative to index.html so assets like icon.png resolve
+                    item.callback('../', pageMockInstance);
+                });
+            };
+            document.body.appendChild(pluginScript);
+        });
+    </script>
+</body>
+
+</html>

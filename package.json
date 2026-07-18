@@ -1,0 +1,25 @@
+{
+  "name": "acode-pb-selectcdn",
+  "version": "1.1.0",
+  "description": "Streamlines CDN dependency management within web projects in Acode.",
+  "main": "dist/main.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Pro-Bandey/SelectCDN.git"
+  },
+  "author": "Pro Bandey",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@types/ace": "^0.0.52",
+    "html-tag-js": "^2.4.15"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.8",
+    "jszip": "^3.10.1"
+  },
+  "scripts": {
+    "dev": "node esbuild.config.mjs --serve",
+    "build": "node esbuild.config.mjs"
+  },
+  "browserslist": "cover 100%,not android < 5"
+}
