@@ -12,13 +12,7 @@
   "price": 0,
   "license": "Apache-2.0",
   "repository": "https://github.com/Pro-Bandey/SelectCDN",
-  "keywords": [
-    "plugin",
-    "acode",
-    "editor",
-    "cdn",
-    "cdnjs"
-  ],
+  "keywords": ["selectcdn", "select", "library", "cdn", "cdnjs"],
   "author": {
     "name": "Pro Bandey",
     "github": "Pro-Bandey",
